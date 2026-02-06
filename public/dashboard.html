@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard · Gestión de Turnos – Estética</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-fuchsia-950 text-white">
+  <div class="max-w-6xl mx-auto p-6">
+
+    <!-- Top bar -->
+    <header class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-fuchsia-400 to-pink-500"></div>
+        <div>
+          <h1 class="text-xl font-semibold">Gestión de Turnos</h1>
+          <p class="text-sm text-white/70">Estética · uñas · cejas · pestañas</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btnNew" class="rounded-xl px-4 py-2 font-semibold bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:opacity-95 transition">
+          + Nuevo turno
+        </button>
+        <button id="btnLogout" class="rounded-xl px-4 py-2 border border-white/15 bg-white/5 hover:bg-white/10 transition">
+          Salir
+        </button>
+      </div>
+    </header>
+
+    <!-- Main grid -->
+    <main class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left: mini calendar + quick actions -->
+      <section class="lg:col-span-1 space-y-6">
+        <!-- Mini calendar -->
+        <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <button id="calPrev" class="px-3 py-2 rounded-xl border border-white/10 bg-slate-900/40 hover:bg-white/10 transition">←</button>
+            <div class="text-center">
+              <div id="calTitle" class="font-semibold"></div>
+              <div class="text-xs text-white/60">Elegí un día para ver la agenda</div>
+            </div>
+            <button id="calNext" class="px-3 py-2 rounded-xl border border-white/10 bg-slate-900/40 hover:bg-white/10 transition">→</button>
+          </div>
+
+          <div class="grid grid-cols-7 text-xs text-white/60 mb-2">
+            <div class="text-center">Lu</div><div class="text-center">Ma</div><div class="text-center">Mi</div>
+            <div class="text-center">Ju</div><div class="text-center">Vi</div><div class="text-center">Sa</div><div class="text-center">Do</div>
+          </div>
+
+          <div id="calGrid" class="grid grid-cols-7 gap-2"></div>
+
+          <div class="mt-4 flex items-center justify-between">
+            <button id="btnToday" class="text-sm text-fuchsia-200 hover:text-fuchsia-100 underline">Ir a hoy</button>
+            <div class="text-xs text-white/60">Día seleccionado: <span id="selectedDateLabel" class="text-white/80"></span></div>
+          </div>
+        </div>
+
+        <!-- Quick add client -->
+        <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-5">
+          <h2 class="font-semibold mb-1">Cliente rápido</h2>
+          <p class="text-sm text-white/60 mb-4">Agregá un cliente sin salir del dashboard.</p>
+
+          <form id="clientForm" class="space-y-3">
+            <input id="cName" required placeholder="Nombre (ej: Sofi Medina)"
+              class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400" />
+            <input id="cPhone" placeholder="Teléfono (opcional)"
+              class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400" />
+            <input id="cNotes" placeholder="Notas (opcional)"
+              class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400" />
+            <button class="w-full rounded-xl py-3 font-semibold bg-white/10 hover:bg-white/15 transition border border-white/10">
+              Guardar cliente
+            </button>
+            <p id="clientMsg" class="text-sm text-pink-200"></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- Right: timeline -->
+      <section class="lg:col-span-2">
+        <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-5">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+            <div>
+              <h2 class="font-semibold text-lg">Agenda del día</h2>
+              <p class="text-sm text-white/60">Vista tipo timeline · ordenada por horario</p>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input id="dateInput" type="date"
+                class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-fuchsia-400" />
+              <select id="statusFilter"
+                class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-fuchsia-400">
+                <option value="">Todos</option>
+                <option value="pendiente">Pendientes</option>
+                <option value="confirmado">Confirmados</option>
+                <option value="cancelado">Cancelados</option>
+              </select>
+              <button id="btnRefresh" class="rounded-xl px-4 py-2 border border-white/15 bg-white/5 hover:bg-white/10 transition">
+                Actualizar
+              </button>
+            </div>
+          </div>
+
+          <div id="appointmentsWrap" class="space-y-4"></div>
+          <p id="apptMsg" class="text-sm text-pink-200 mt-3"></p>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal: New Appointment -->
+    <div id="modal" class="fixed inset-0 hidden items-center justify-center p-6 bg-black/60">
+      <div class="w-full max-w-xl rounded-3xl border border-white/10 bg-slate-950/70 backdrop-blur-xl shadow-2xl p-6">
+        <div class="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <h3 class="text-lg font-semibold">Nuevo turno</h3>
+            <p class="text-sm text-white/60">Si el horario está ocupado, te aviso.</p>
+          </div>
+          <button id="btnClose" class="px-3 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition">✕</button>
+        </div>
+
+        <form id="apptForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="md:col-span-2">
+            <label class="text-sm text-white/80">Cliente</label>
+            <select id="aClient" required
+              class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400">
+              <option value="">Cargando...</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-sm text-white/80">Servicio</label>
+            <select id="aService" required
+              class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400">
+              <option>Uñas</option>
+              <option>Cejas</option>
+              <option>Pestañas</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-sm text-white/80">Fecha</label>
+            <input id="aDate" type="date" required
+              class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400" />
+          </div>
+
+          <div>
+            <label class="text-sm text-white/80">Hora</label>
+            <input id="aTime" type="time" required
+              class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400" />
+          </div>
+
+          <div>
+            <label class="text-sm text-white/80">Duración (min)</label>
+            <select id="aDuration" required
+              class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400">
+              <option value="30">30</option>
+              <option value="45">45</option>
+              <option value="60" selected>60</option>
+              <option value="90">90</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-sm text-white/80">Precio</label>
+            <input id="aPrice" type="number" min="0" value="0" required
+              class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400" />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="text-sm text-white/80">Notas</label>
+            <input id="aNotes" placeholder="(opcional) ej: semi permanente, volumen 2D..."
+              class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400" />
+          </div>
+
+          <div class="md:col-span-2 flex items-center justify-between gap-3">
+            <p id="modalMsg" class="text-sm text-pink-200"></p>
+            <button class="rounded-xl px-5 py-3 font-semibold bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:opacity-95 transition">
+              Crear turno
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="/js/dashboard.js"></script>
+</body>
+</html>

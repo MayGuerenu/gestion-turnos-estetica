@@ -8,6 +8,7 @@ const createSchema = z.object({
   time: z.string().regex(/^\d{2}:\d{2}$/),
   duration_min: z.number().int().positive(),
   price: z.number().nonnegative().default(0),
+  status: z.enum(["pendiente", "confirmado", "cancelado"]).optional(),
   notes: z.string().optional().nullable()
 });
 
@@ -133,6 +134,7 @@ export async function updateAppointment(userId, id, payload) {
       time: finalTime,
       duration_min: finalDuration,
       price: parsed.data.price ?? current.price,
+      status: parsed.data.status ?? current.status,
       notes: parsed.data.notes ?? current.notes
     })
     .eq("id", id)
