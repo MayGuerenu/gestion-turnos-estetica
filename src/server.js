@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import clientsRoutes from "./routes/clientsRoutes.js";
+import appointmentsRoutes from "./routes/appointmentsRoutes.js";
 
 import authRoutes from "./routes/authRoutes.js";
 
@@ -16,6 +18,8 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/clients", clientsRoutes);
+app.use("/api/appointments", appointmentsRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
