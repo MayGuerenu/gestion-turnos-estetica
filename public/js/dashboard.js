@@ -193,12 +193,11 @@ function closeModal() {
 
 // ---- Calendar render
 function monthTitle(d) {
-  return d.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+  const txt = d.toLocaleDateString("es-AR", { month: "long", year: "numeric" });
+  return txt.charAt(0).toUpperCase() + txt.slice(1);
 }
-
 function renderCalendar() {
   calTitle.textContent = monthTitle(calCursor);
-
   // Monday-first index
   const year = calCursor.getFullYear();
   const month = calCursor.getMonth();
