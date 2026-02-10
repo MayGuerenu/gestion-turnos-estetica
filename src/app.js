@@ -41,6 +41,10 @@ app.get("/dashboard", (_req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "dashboard.html"));
 });
 
+app.get("/api/ping", (_req, res) => {
+  res.json({ ok: true, ping: true, ts: Date.now() });
+});
+
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientsRoutes);
