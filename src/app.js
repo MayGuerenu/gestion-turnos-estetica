@@ -22,6 +22,24 @@ app.get("/api/health", (_req, res) => {
     project: "gestion-turnos-estetica"
   });
 });
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ...
+app.use(express.static(path.join(__dirname, "..", "public")));
+
+// Home → servir el login 
+app.get("/", (_req, res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+});
+
+// Dashboard 
+app.get("/dashboard", (_req, res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "dashboard.html"));
+});
 
 // Rutas
 app.use("/api/auth", authRoutes);
