@@ -3,50 +3,127 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gestión de Turnos – Estética</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Gestión de Turnos · Estética</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">✨</div>
+      <div>
+        <h1>Gestión de Turnos</h1>
+        <p class="subtitle">Estética</p>
+      </div>
+    </div>
 
-<body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-fuchsia-950 text-white">
-  <div class="min-h-screen flex items-center justify-center p-6">
-    <div class="w-full max-w-md rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-8">
-      <div class="flex items-center gap-3 mb-6">
-        <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-fuchsia-400 to-pink-500"></div>
-        <div>
-          <h1 class="text-xl font-semibold">Gestión de Turnos</h1>
-          <p class="text-sm text-white/70">Estética</p>
+    <div class="actions">
+      <button id="btnToday" class="btn ghost">Hoy</button>
+      <button id="btnNew" class="btn">+ Nuevo turno</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="card calendar">
+      <div class="card-header">
+        <h2 id="monthTitle">Mes</h2>
+        <div class="cal-nav">
+          <button id="prevMonth" class="icon-btn" aria-label="Mes anterior">‹</button>
+          <button id="nextMonth" class="icon-btn" aria-label="Mes siguiente">›</button>
         </div>
       </div>
 
-      <form id="loginForm" class="space-y-4">
+      <div class="dow">
+        <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
+      </div>
+
+      <div id="calendarGrid" class="grid"></div>
+
+      <div class="legend">
+        <span class="dot dot-confirmed"></span> Confirmado
+        <span class="dot dot-pending"></span> Pendiente
+        <span class="dot dot-cancelled"></span> Cancelado
+      </div>
+    </section>
+
+    <section class="card timeline">
+      <div class="card-header">
         <div>
-          <label class="text-sm text-white/80">Email</label>
-          <input id="email" type="email" required
-                 class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400"
-                 placeholder="tu@email.com" />
+          <h2>Agenda</h2>
+          <p id="selectedDateLabel" class="subtitle">—</p>
         </div>
 
-        <div>
-          <label class="text-sm text-white/80">Contraseña</label>
-          <input id="password" type="password" required minlength="6"
-                 class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400"
-                 placeholder="••••••••" />
+        <div class="filters">
+          <select id="statusFilter" class="select">
+            <option value="all">Todos</option>
+            <option value="confirmado">Confirmado</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="cancelado">Cancelado</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="timelineList" class="timeline-list">
+        <!-- tarjetas -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal nuevo turno (UI, después lo conectamos) -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Nuevo turno</h3>
+        <button id="closeModal" class="icon-btn" aria-label="Cerrar">✕</button>
+      </div>
+
+      <form id="apptForm" class="form">
+        <div class="row">
+          <label>Cliente
+            <input id="clientName" type="text" placeholder="Nombre y apellido" required />
+          </label>
+          <label>Servicio
+            <select id="service" required>
+              <option value="Uñas">Uñas</option>
+              <option value="Cejas">Cejas</option>
+              <option value="Pestañas">Pestañas</option>
+            </select>
+          </label>
         </div>
 
-        <button class="w-full rounded-xl py-3 font-semibold bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:opacity-95 transition">
-          Iniciar sesión
-        </button>
-
-        <p id="msg" class="text-sm text-pink-200"></p>
-
-        <div class="text-center text-sm text-white/70">
-          ¿No tenés cuenta?
-          <a class="text-fuchsia-300 hover:text-fuchsia-200 underline" href="/register.html">Crear cuenta</a>
+        <div class="row">
+          <label>Fecha
+            <input id="date" type="date" required />
+          </label>
+          <label>Hora
+            <input id="time" type="time" required />
+          </label>
         </div>
+
+        <div class="row">
+          <label>Duración (min)
+            <input id="duration" type="number" value="60" min="15" step="15" required />
+          </label>
+          <label>Precio ($)
+            <input id="price" type="number" value="0" min="0" step="100" />
+          </label>
+        </div>
+
+        <label>Notas
+          <textarea id="notes" rows="3" placeholder="Ej: semi, diseño, alergias..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="mockCreate" class="btn ghost">Crear (demo)</button>
+          <button type="submit" class="btn">Guardar</button>
+        </div>
+
+        <p class="hint">
+          * Por ahora es UI. Luego lo conectamos a tu API (appointments + clients).
+        </p>
       </form>
     </div>
   </div>
 
-  <script type="module" src="/js/auth.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
