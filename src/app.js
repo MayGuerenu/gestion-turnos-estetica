@@ -1,6 +1,9 @@
+// IMPORTS — TODOS ARRIBA
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/authRoutes.js";
 import clientsRoutes from "./routes/clientsRoutes.js";
@@ -8,44 +11,44 @@ import appointmentsRoutes from "./routes/appointmentsRoutes.js";
 
 dotenv.config();
 
+// dirname en ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// APP
 const app = express();
 
-// Middlewares
+// MIDDLEWARES
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
 
-// Health check (para Render / Vercel / profe)
+// Static files (UNA sola vez)
+app.use(express.static(path.join(__dirname, "..", "public")));
+
+// HOME → login
+app.get("/", (_req, res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+});
+
+// DASHBOARD
+app.get("/dashboard", (_req, res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "dashboard.html"));
+});
+
+// HEALTH
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
     project: "gestion-turnos-estetica"
   });
 });
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// ...
-app.use(express.static(path.join(__dirname, "..", "public")));
-
-// Home → servir el login 
-app.get("/", (_req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
-});
-
-// Dashboard 
-app.get("/dashboard", (_req, res) => {
-  res.sendFile(path.join(__dirname, "..", "public", "dashboard.html"));
-});
-
+// PING
 app.get("/api/ping", (_req, res) => {
-  res.json({ ok: true, ping: true, ts: Date.now() });
+  res.json({ ok: true, ping: true });
 });
 
-// Rutas
+// API ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientsRoutes);
 app.use("/api/appointments", appointmentsRoutes);
