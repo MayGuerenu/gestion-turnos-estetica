@@ -83,13 +83,33 @@ function statusBadge(status) {
 
 function renderAppointments(items) {
   appointmentsWrap.innerHTML = "";
-  if (!items.length) {
-    appointmentsWrap.innerHTML = `
-      <div class="rounded-2xl border border-white/10 bg-slate-900/30 p-6 text-white/70">
-        No hay turnos para este día.
-      </div>`;
-    return;
-  }
+if (!items.length) {
+  appointmentsWrap.innerHTML = `
+    <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-8">
+      <div class="text-lg font-semibold">No hay turnos para este día</div>
+      <div class="mt-2 text-sm text-white/70">
+        Elegí otra fecha o creá uno con 
+        <span class="text-fuchsia-200 font-semibold">“+ Nuevo turno”</span>.
+      </div>
+
+      <div class="mt-6 grid grid-cols-3 gap-3 text-xs text-white/60">
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-white/80 font-semibold">Tip</div>
+          <div>Usá “Ir a hoy” para volver rápido.</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-white/80 font-semibold">Filtro</div>
+          <div>Probá filtrar por estado.</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+          <div class="text-white/80 font-semibold">Cliente</div>
+          <div>Podés cargar uno rápido a la izquierda.</div>
+        </div>
+      </div>
+    </div>
+  `;
+  return;
+}
 
   items.forEach((a) => {
     const time = (a.time || "").slice(0, 5);
@@ -114,7 +134,7 @@ function renderAppointments(items) {
               <div class="text-sm text-white/70">${a.notes ?? ""}</div>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
               <div class="text-right mr-2">
                 <div class="font-semibold">$${Number(a.price).toLocaleString("es-AR")}</div>
                 <div class="text-xs text-white/50">id: ${a.id.slice(0, 8)}…</div>
