@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard · Gestión de Turnos – Estética</title>
+  <link rel="icon" type="image/svg+xml" href="./images/logo.png" />
   <script>
   tailwind.config = {
     safelist: [
@@ -27,13 +28,17 @@
 
     <!-- Top bar -->
     <header class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div class="flex items-center gap-3">
-        <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-fuchsia-400 to-pink-500"></div>
-        <div>
-          <h1 class="text-xl font-semibold">Gestión de Turnos</h1>
-          <p class="text-sm text-white/70">Estética de uñas · cejas · pestañas</p>
-        </div>
-      </div>
+<div class="flex items-center gap-3">
+  <img
+    src="/public/images/logo.png"
+    alt="Logo Gestión de Turnos"
+    class="h-10 w-10"
+  />
+  <div>
+    <h1 class="text-xl font-semibold">Gestión de Turnos</h1>
+    <p class="text-sm text-white/70">Estética de uñas · cejas · pestañas</p>
+  </div>
+</div>
 
       <div class="flex items-center gap-2">
         <button id="btnNew" class="rounded-xl px-4 py-2 font-semibold bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:opacity-95 transition">
