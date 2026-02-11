@@ -1,6 +1,8 @@
 # Gestión de Turnos – Estética (PP2)
-
-Aplicación web para gestionar turnos de una estética (en este caso se adaptó solo para uñas, cejas y pestañas, pero se puede modificar). Permite registrar usuarios, administrar clientes y crear turnos evitando solapamientos de horarios.
+Este proyecto fue desarrollado como trabajo práctico final de la materia Práctica Profesionalizante 2.
+Consiste en una aplicación web full stack orientada a la gestión de turnos para un centro de estética.
+La aplicación permite registrar usuarios, administrar clientes y gestionar turnos, evitando solapamientos de horarios.
+En esta implementación se adaptó el sistema para servicios de uñas, cejas y pestañas, aunque su estructura permite ser extendida a otros rubros.
 
 ## Problemática
 En un emprendimiento de estética, el manejo manual de agenda (WhatsApp/cuaderno) suele generar:
@@ -10,7 +12,7 @@ En un emprendimiento de estética, el manejo manual de agenda (WhatsApp/cuaderno
 
 ## Objetivo
 Desarrollar un gestor de turnos que permita:
-- autenticación de usuarias (admin)
+- autenticación de usuarios (admin)
 - alta/edición/baja de clientes
 - alta/edición/cancelación de turnos
 - validación de disponibilidad horaria (sin solapamientos)
