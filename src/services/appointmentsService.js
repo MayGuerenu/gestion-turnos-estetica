@@ -68,32 +68,38 @@ export async function createAppointment(userId, payload) {
   if (!parsed.success) return { ok: false, status: 400, message: "Datos inválidos" };
 
   try {
-  // VALIDAR DÍA BLOQUEADO
+    //  VALIDAR DÍA BLOQUEADO (por usuario)
   const { data: blocked, error: blockedError } = await supabase
-    .from("blocked_days")
-    .select("id, reason")
-    .eq("user_id", userId)
-    .eq("date", finalDate)
-    .maybeSingle();
+  .from("blocked_days")
+  .select("id, reason, user_id")
+  .eq("date", parsed.data.date)
+  .or(`user_id.eq.${userId},user_id.is.null`)
+  .maybeSingle();
 
-  if (blockedError) throw new Error(blockedError.message);
+if (blockedError) throw new Error(blockedError.message);
 
-  if (blocked) {
-    return {
-      ok: false,
-      status: 409,
-      message: `Día no disponible: ${blocked.reason ?? "bloqueado por administración"}`
-    };
-  }
-
-  // VALIDAR SOLAPAMIENTO
-  const overlap = await hasOverlap(userId, finalDate, finalTime, finalDuration, id);
-  if (overlap) return { ok: false, status: 409, message: "Horario ocupado" };
-
-} catch (e) {
-  return { ok: false, status: 500, message: e.message };
+if (blocked) {
+  return {
+    ok: false,
+    status: 409,
+    message: `Día no disponible: ${blocked.reason ?? "bloqueado por administración"}`
+  };
 }
 
+    // VALIDAR SOLAPAMIENTO (usa los datos parseados)
+    const overlap = await hasOverlap(
+      userId,
+      parsed.data.date,
+      parsed.data.time,
+      parsed.data.duration_min
+    );
+
+    if (overlap) return { ok: false, status: 409, message: "Horario ocupado" };
+  } catch (e) {
+    return { ok: false, status: 500, message: e.message };
+  }
+
+  //  INSERT
   const { data, error } = await supabase
     .from("appointments")
     .insert({
