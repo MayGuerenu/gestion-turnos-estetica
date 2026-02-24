@@ -4,10 +4,15 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-
+import { authMiddleware } from "./middlewares/authMiddleware.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import { adminOnly } from "./middlewares/adminOnly.js";
 import authRoutes from "./routes/authRoutes.js";
 import clientsRoutes from "./routes/clientsRoutes.js";
 import appointmentsRoutes from "./routes/appointmentsRoutes.js";
+
+
+
 
 dotenv.config();
 
@@ -25,7 +30,7 @@ app.use(express.json());
 // Static files (UNA sola vez)
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-// HOME → login
+// login
 app.get("/", (_req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
@@ -43,14 +48,10 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-// PING
-app.get("/api/ping", (_req, res) => {
-  res.json({ ok: true, ping: true });
-});
 
 // API ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientsRoutes);
 app.use("/api/appointments", appointmentsRoutes);
-
+app.use("/api/admin", authMiddleware, adminOnly, adminRoutes);
 export default app;

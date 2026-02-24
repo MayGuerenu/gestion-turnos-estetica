@@ -8,7 +8,7 @@ export function authMiddleware(req, res, next) {
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: payload.userId, email: payload.email };
+    req.user = { id: payload.userId, email: payload.email, role: payload.role};
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
