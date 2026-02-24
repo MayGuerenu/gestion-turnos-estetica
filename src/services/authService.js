@@ -14,11 +14,16 @@ export async function register({ email, password }) {
     return { ok: false, status: 400, message: "Datos inválidos" };
   }
 
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from("users_app")
     .select("id")
     .eq("email", email)
-    .single();
+    .maybeSingle();
+
+  // Si hubo error real consultando
+  if (existingError) {
+    return { ok: false, status: 500, message: existingError.message };
+  }
 
   if (existing) {
     return { ok: false, status: 409, message: "Email ya registrado" };
@@ -29,14 +34,14 @@ export async function register({ email, password }) {
   const { data, error } = await supabase
     .from("users_app")
     .insert({ email, password_hash: passwordHash })
-    .select()
+    .select("id,email,role")
     .single();
 
   if (error) {
     return { ok: false, status: 500, message: error.message };
   }
 
-  return { ok: true, status: 201, user: { id: data.id, email: data.email } };
+  return { ok: true, status: 201, user: { id: data.id, email: data.email, role: data.role } };
 }
 
 export async function login({ email, password }) {
@@ -45,13 +50,13 @@ export async function login({ email, password }) {
     return { ok: false, status: 400, message: "Datos inválidos" };
   }
 
-  const { data: user } = await supabase
+  const { data: user, error } = await supabase
     .from("users_app")
-    .select("*")
+    .select("id,email,password_hash,role")
     .eq("email", email)
     .single();
 
-  if (!user) {
+  if (error || !user) {
     return { ok: false, status: 401, message: "Credenciales inválidas" };
   }
 
@@ -61,10 +66,15 @@ export async function login({ email, password }) {
   }
 
   const token = jwt.sign(
-    { userId: user.id, email: user.email },
+    { userId: user.id, email: user.email, role: user.role },
     process.env.JWT_SECRET,
     { expiresIn: "2h" }
   );
 
-  return { ok: true, status: 200, token, user: { id: user.id, email: user.email } };
+  return {
+    ok: true,
+    status: 200,
+    token,
+    user: { id: user.id, email: user.email, role: user.role }
+  };
 }
