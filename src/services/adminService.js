@@ -8,7 +8,9 @@ const blockedSchema = z.object({
 
 function parseRange({ from, to }) {
   const now = new Date();
-  const toDate = to ? new Date(to) : now;
+
+  // default: último mes hasta +30 días 
+  const toDate = to ? new Date(to) : new Date(now.getFullYear(), now.getMonth(), now.getDate() + 30);
   const fromDate = from ? new Date(from) : new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
 
   const pad2 = (n) => String(n).padStart(2, "0");
@@ -32,10 +34,15 @@ export async function dashboard(_adminUserId) {
     return { ok: false, status: 500, message: (usersErr || clientsErr || apptsErr).message };
   }
 
+  const today = new Date();
+  const pad2 = (n) => String(n).padStart(2, "0");
+  const todayIso = `${today.getFullYear()}-${pad2(today.getMonth() + 1)}-${pad2(today.getDate())}`;
+
   const { data: nextAppointments, error: nextErr } = await supabase
     .from("appointments")
     .select("id, service, date, time, status, price, user_id, client_id, created_at")
     .neq("status", "cancelado")
+    .gte("date", todayIso)              // 👈 SOLO desde hoy
     .order("date", { ascending: true })
     .order("time", { ascending: true })
     .limit(5);
