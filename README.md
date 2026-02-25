@@ -47,8 +47,56 @@ Desarrollar un gestor de turnos que permita:
 ## Regla de negocio principal (anti-solapamiento)
 Al crear o editar un turno, el sistema valida que el rango horario no se superponga con turnos “pendiente” o “confirmado” del mismo día para el mismo usuario.
 
+## Panel Administrador
+
+Acceso exclusivo para usuarios con rol "admin".
+
+Funcionalidades:
+- Métricas generales (usuarios, clientes, turnos)
+- Próximos turnos (no cancelados)
+- Gestión de días bloqueados
+- Reportes por rango de fechas:
+  - Resumen (total, pendiente, confirmado, cancelado)
+  - Servicios más solicitados
+
+## Profesionales (Staff)
+
+Cada turno se asigna a un profesional.
+
+Tabla: `staff`
+- id (uuid)
+- user_id (uuid)
+- name
+- active
+- created_at
+
+Los turnos incluyen:
+- staff_id (FK)
+
+La validación de solapamiento se realiza por profesional.
+
+## Validaciones implementadas
+
+- No se permiten turnos superpuestos por profesional.
+- No se permiten turnos en días bloqueados.
+- Rutas protegidas mediante JWT.
+- Acceso a /admin restringido por rol.
+
 ## Instalación y ejecución
-1. Clonar el repositorio
+1. Clonar el repositorio  
 2. Instalar dependencias:
    ```bash
    npm install
+
+3. Crear un archivo .env en la raíz del proyecto con las siguientes variables: 
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+JWT_SECRET=
+
+4. Ejecutar el servidor: 
+   ```bash npm
+      run dev
+
+5. Abrir en el navegador:
+ http://localhost:3000
+
