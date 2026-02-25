@@ -3,6 +3,7 @@ import { supabase } from "../config/supabaseClient.js";
 
 const createSchema = z.object({
   client_id: z.string().uuid(),
+  staff_id: z.string().uuid(),
   service: z.enum(["Uñas", "Cejas", "Pestañas"]),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   time: z.string().regex(/^\d{2}:\d{2}$/),
@@ -17,14 +18,14 @@ function toMinutes(hhmm) {
   return h * 60 + m;
 }
 
-async function hasOverlap(userId, date, startTime, durationMin, excludeId = null) {
+async function hasOverlap(staffId, date, startTime, durationMin, excludeId = null) {
   const start = toMinutes(startTime);
   const end = start + durationMin;
 
   const { data, error } = await supabase
     .from("appointments")
     .select("id,time,duration_min,status")
-    .eq("user_id", userId)
+    .eq("staff_id", staffId)
     .eq("date", date)
     .in("status", ["pendiente", "confirmado"]);
 
@@ -68,12 +69,12 @@ export async function createAppointment(userId, payload) {
   if (!parsed.success) return { ok: false, status: 400, message: "Datos inválidos" };
 
   try {
-    //  VALIDAR DÍA BLOQUEADO (por usuario)
-  const { data: blocked, error: blockedError } = await supabase
+  // VALIDAR DÍA BLOQUEADO (GLOBAL o del usuario)
+const { data: blocked, error: blockedError } = await supabase
   .from("blocked_days")
   .select("id, reason, user_id")
   .eq("date", parsed.data.date)
-  .or(`user_id.eq.${userId},user_id.is.null`)
+  .or(`user_id.is.null,user_id.eq.${userId}`)
   .maybeSingle();
 
 if (blockedError) throw new Error(blockedError.message);
@@ -88,7 +89,7 @@ if (blocked) {
 
     // VALIDAR SOLAPAMIENTO (usa los datos parseados)
     const overlap = await hasOverlap(
-      userId,
+      parsed.data.staff_id,
       parsed.data.date,
       parsed.data.time,
       parsed.data.duration_min
@@ -105,6 +106,7 @@ if (blocked) {
     .insert({
       user_id: userId,
       client_id: parsed.data.client_id,
+      staff_id: parsed.data.staff_id,
       service: parsed.data.service,
       date: parsed.data.date,
       time: parsed.data.time,

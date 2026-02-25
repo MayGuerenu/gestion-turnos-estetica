@@ -4,23 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard · Gestión de Turnos – Estética</title>
-  <link rel="icon" type="image/svg+xml" href="./images/logo.png" />
-  <script>
-  tailwind.config = {
-    safelist: [
-      // Calendario (botones creados por JS)
-      "h-10","w-full","rounded-xl","border","border-white/10","bg-slate-900/40",
-      "hover:bg-white/10","transition","text-sm","opacity-30","cursor-not-allowed",
-      "ring-2","ring-fuchsia-400","bg-fuchsia-500/10","border-fuchsia-300/30",
+  <link rel="icon" type="image/png" href="./images/logo.png" />
 
-      // Agenda (cards creadas por JS)
-      "flex","gap-4","flex-1","p-4","p-6","rounded-2xl","bg-slate-900/40","bg-slate-900/30",
-      "text-right","font-semibold","text-xs","text-white/60","text-white/70","mt-2","mt-4",
-      "px-2","py-1","rounded-full","border-white/15","bg-white/5","hover:bg-white/10"
-    ]
-  }
-</script>
-<script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      safelist: [
+        "h-10","w-full","rounded-xl","border","border-white/10","bg-slate-900/40",
+        "hover:bg-white/10","transition","text-sm","opacity-30","cursor-not-allowed",
+        "ring-2","ring-fuchsia-400","bg-fuchsia-500/10","border-fuchsia-300/30",
+        "flex","gap-4","flex-1","p-4","p-6","rounded-2xl","bg-slate-900/40","bg-slate-900/30",
+        "text-right","font-semibold","text-xs","text-white/60","text-white/70","mt-2","mt-4",
+        "px-2","py-1","rounded-full","border-white/15","bg-white/5","hover:bg-white/10"
+      ]
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-fuchsia-950 text-white">
@@ -28,19 +26,25 @@
 
     <!-- Top bar -->
     <header class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-<div class="flex items-center gap-3">
-  <img
-    src="images/logo.png"
-    alt="Logo Gestión de Turnos"
-    class="h-10 w-10"
-  />
-  <div>
-    <h1 class="text-xl font-semibold">Gestión de Turnos</h1>
-    <p class="text-sm text-white/70">Estética de uñas · cejas · pestañas</p>
-  </div>
-</div>
+      <div class="flex items-center gap-3">
+        <img
+          src="./images/logo.png"
+          alt="Logo Gestión de Turnos"
+          class="h-10 w-10 rounded-xl"
+        />
+        <div>
+          <h1 class="text-xl font-semibold">Gestión de Turnos</h1>
+          <p class="text-sm text-white/70">Estética de uñas · cejas · pestañas</p>
+        </div>
+      </div>
 
       <div class="flex items-center gap-2">
+        <a id="adminLink"
+           href="/admin.html"
+           class="hidden rounded-xl px-4 py-2 border border-white/15 bg-white/5 hover:bg-white/10 transition">
+          Admin
+        </a>
+
         <button id="btnNew" class="rounded-xl px-4 py-2 font-semibold bg-gradient-to-r from-fuchsia-500 to-pink-500 hover:opacity-95 transition">
           + Nuevo turno
         </button>
@@ -52,8 +56,10 @@
 
     <!-- Main grid -->
     <main class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Left: mini calendar + quick actions -->
+
+      <!-- Left -->
       <section class="lg:col-span-1 space-y-6">
+
         <!-- Mini calendar -->
         <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-5">
           <div class="flex items-center justify-between mb-4">
@@ -98,7 +104,7 @@
         </div>
       </section>
 
-      <!-- Right: timeline -->
+      <!-- Right -->
       <section class="lg:col-span-2">
         <div class="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl p-5">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
@@ -107,20 +113,20 @@
               <p class="text-sm text-white/60">Vista ordenada por horario</p>
             </div>
 
- <div class="flex items-center gap-2">
-  <input id="dateInput" type="date"
-    class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-fuchsia-400" />
-  <select id="statusFilter"
-    class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-fuchsia-400">
-    <option value="">Todos</option>
-    <option value="pendiente">Pendientes</option>
-    <option value="confirmado">Confirmados</option>
-    <option value="cancelado">Cancelados</option>
-  </select>
-  <button id="btnRefresh" class="rounded-xl px-4 py-2 border border-white/15 bg-white/5 hover:bg-white/10 transition">
-    Actualizar
-  </button>
-  </div>
+            <div class="flex items-center gap-2">
+              <input id="dateInput" type="date"
+                class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-fuchsia-400" />
+              <select id="statusFilter"
+                class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-fuchsia-400">
+                <option value="">Todos</option>
+                <option value="pendiente">Pendientes</option>
+                <option value="confirmado">Confirmados</option>
+                <option value="cancelado">Cancelados</option>
+              </select>
+              <button id="btnRefresh" class="rounded-xl px-4 py-2 border border-white/15 bg-white/5 hover:bg-white/10 transition">
+                Actualizar
+              </button>
+            </div>
           </div>
 
           <div id="appointmentsWrap" class="space-y-4"></div>
@@ -129,7 +135,7 @@
       </section>
     </main>
 
-    <!-- Modal: New Appointment -->
+    <!-- Modal -->
     <div id="modal" class="fixed inset-0 hidden items-center justify-center p-6 bg-black/60">
       <div class="w-full max-w-xl rounded-3xl border border-white/10 bg-slate-950/70 backdrop-blur-xl shadow-2xl p-6">
         <div class="flex items-start justify-between gap-3 mb-4">
@@ -141,6 +147,15 @@
         </div>
 
         <form id="apptForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div class="md:col-span-2">
+            <label class="text-sm text-white/80">Profesional</label>
+            <select id="aStaff" required
+              class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-4 py-3 outline-none focus:ring-2 focus:ring-fuchsia-400">
+              <option value="">Cargando...</option>
+            </select>
+          </div>
+
           <div class="md:col-span-2">
             <label class="text-sm text-white/80">Cliente</label>
             <select id="aClient" required
@@ -200,10 +215,10 @@
               Crear turno
             </button>
           </div>
+
         </form>
       </div>
     </div>
-
   </div>
 
   <script type="module" src="./js/dashboard.js"></script>

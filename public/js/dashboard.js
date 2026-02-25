@@ -24,6 +24,7 @@ const aDate = $("#aDate");
 const aTime = $("#aTime");
 const aDuration = $("#aDuration");
 const aPrice = $("#aPrice");
+const aStaff = document.querySelector("#aStaff");
 const aNotes = $("#aNotes");
 const modalMsg = $("#modalMsg");
 
@@ -34,6 +35,15 @@ const calPrev = $("#calPrev");
 const calNext = $("#calNext");
 const btnToday = $("#btnToday");
 const selectedDateLabel = $("#selectedDateLabel");
+
+//Admin
+const user = JSON.parse(localStorage.getItem("user") || "null");
+const adminLink = document.querySelector("#adminLink");
+
+if (adminLink) {
+  if (user?.role === "admin") adminLink.classList.remove("hidden");
+  else adminLink.classList.add("hidden");
+}
 
 let clientsCache = [];
 let selectedDate = new Date(); // hoy

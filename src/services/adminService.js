@@ -7,7 +7,6 @@ const blockedSchema = z.object({
 });
 
 function parseRange({ from, to }) {
-  // defaults “suaves”: si no mandan query, devuelve último mes
   const now = new Date();
   const toDate = to ? new Date(to) : now;
   const fromDate = from ? new Date(from) : new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
@@ -19,13 +18,15 @@ function parseRange({ from, to }) {
 }
 
 export async function dashboard(_adminUserId) {
-  // resumen simple: total usuarios, clientes, turnos y próximos 5 turnos
-  const [{ count: usersCount, error: usersErr }, { count: clientsCount, error: clientsErr }, { count: apptsCount, error: apptsErr }] =
-    await Promise.all([
-      supabase.from("users_app").select("id", { count: "exact", head: true }),
-      supabase.from("clients").select("id", { count: "exact", head: true }),
-      supabase.from("appointments").select("id", { count: "exact", head: true })
-    ]);
+  const [
+    { count: usersCount, error: usersErr },
+    { count: clientsCount, error: clientsErr },
+    { count: apptsCount, error: apptsErr }
+  ] = await Promise.all([
+    supabase.from("users_app").select("id", { count: "exact", head: true }),
+    supabase.from("clients").select("id", { count: "exact", head: true }),
+    supabase.from("appointments").select("id", { count: "exact", head: true })
+  ]);
 
   if (usersErr || clientsErr || apptsErr) {
     return { ok: false, status: 500, message: (usersErr || clientsErr || apptsErr).message };
@@ -60,7 +61,7 @@ export async function listBlockedDays() {
     .order("date", { ascending: true });
 
   if (error) return { ok: false, status: 500, message: error.message };
-  return { ok: true, status: 200, data };
+  return { ok: true, status: 200, data: data ?? [] };
 }
 
 export async function createBlockedDay(payload) {
@@ -69,18 +70,20 @@ export async function createBlockedDay(payload) {
 
   const { date, reason } = parsed.data;
 
-  // evita duplicado por fecha (si agregás unique en DB, mejor)
-  const { data: exists } = await supabase
+  // duplicado: mismo día global (user_id null)
+  const { data: exists, error: existsErr } = await supabase
     .from("blocked_days")
     .select("id")
+    .is("user_id", null)
     .eq("date", date)
     .maybeSingle();
 
+  if (existsErr) return { ok: false, status: 500, message: existsErr.message };
   if (exists) return { ok: false, status: 409, message: "Ese día ya está bloqueado" };
 
   const { data, error } = await supabase
     .from("blocked_days")
-    .insert({ date, reason: reason ?? null })
+    .insert({ user_id: null, date, reason: reason ?? null })
     .select()
     .single();
 
@@ -111,11 +114,7 @@ export async function reportSummary(query) {
     if (counts[a.status] !== undefined) counts[a.status]++;
   }
 
-  return {
-    ok: true,
-    status: 200,
-    data: { range: { from, to }, ...counts }
-  };
+  return { ok: true, status: 200, data: { range: { from, to }, ...counts } };
 }
 
 export async function reportServices(query) {
@@ -135,9 +134,9 @@ export async function reportServices(query) {
     map[a.service] = (map[a.service] || 0) + 1;
   }
 
-  const result = Object.entries(map)
+  const items = Object.entries(map)
     .map(([service, count]) => ({ service, count }))
     .sort((a, b) => b.count - a.count);
 
-  return { ok: true, status: 200, data: { range: { from, to }, items: result } };
+  return { ok: true, status: 200, data: { range: { from, to }, items } };
 }

@@ -10,7 +10,7 @@ import { adminOnly } from "./middlewares/adminOnly.js";
 import authRoutes from "./routes/authRoutes.js";
 import clientsRoutes from "./routes/clientsRoutes.js";
 import appointmentsRoutes from "./routes/appointmentsRoutes.js";
-
+import staffRoutes from "./routes/staffRoutes.js";
 
 
 
@@ -54,4 +54,5 @@ app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientsRoutes);
 app.use("/api/appointments", appointmentsRoutes);
 app.use("/api/admin", authMiddleware, adminOnly, adminRoutes);
+app.use("/api/staff", staffRoutes);
 export default app;
