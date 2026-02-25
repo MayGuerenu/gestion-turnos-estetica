@@ -2,20 +2,19 @@ import { api, clearToken, getToken } from "./api.js";
 
 const $ = (s) => document.querySelector(s);
 
-// ---- Guards (ANTES de tocar el DOM)
 function redirect(to) {
   window.location.href = to;
   throw new Error(`Redirected to ${to}`);
 }
 
-// 1) si no hay token -> login
+// si no hay token -> login
 if (!getToken()) redirect("/");
 
-// 2) si no es admin -> dashboard normal
+// si no es admin > dashboard normal
 const user = JSON.parse(localStorage.getItem("user") || "null");
 if (!user || user.role !== "admin") redirect("/dashboard.html");
 
-// ---- DOM
+// DOM
 const msg = $("#msg");
 const btnLogout = $("#btnLogout");
 
@@ -148,7 +147,7 @@ function renderServices(data) {
     .join("");
 }
 
-// ---- Loads
+//  Loads
 async function loadDashboard() {
   setMsg("");
   const data = await api("/api/admin/dashboard");
@@ -179,7 +178,7 @@ async function loadReports() {
   renderServices(services);
 }
 
-// ---- Events
+// - Events
 if (btnLogout) {
   btnLogout.addEventListener("click", () => {
     clearToken();
@@ -235,7 +234,7 @@ if (rangeForm) {
   });
 }
 
-// ---- Init
+//  Init
 (async function init() {
   try {
     await loadDashboard();
@@ -245,3 +244,10 @@ if (rangeForm) {
     setMsg(err.message);
   }
 })();
+// Auto refresh (cada 5s)
+setInterval(async () => {
+  try {
+    await loadDashboard();
+  } catch (e) {
+  }
+}, 5000);
