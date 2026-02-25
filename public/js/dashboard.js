@@ -19,12 +19,12 @@ const clientForm = $("#clientForm");
 const clientMsg = $("#clientMsg");
 
 const aClient = $("#aClient");
+const aStaff = $("#aStaff");
 const aService = $("#aService");
 const aDate = $("#aDate");
 const aTime = $("#aTime");
 const aDuration = $("#aDuration");
 const aPrice = $("#aPrice");
-const aStaff = document.querySelector("#aStaff");
 const aNotes = $("#aNotes");
 const modalMsg = $("#modalMsg");
 
@@ -172,6 +172,16 @@ async function loadClients() {
   aClient.innerHTML = `<option value="">Seleccioná un cliente</option>` +
     clientsCache.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
 }
+async function loadStaff() {
+  const staff = await api("/api/staff");
+
+  aStaff.innerHTML =
+    `<option value="">Seleccioná un profesional</option>` +
+    (staff || [])
+      .filter(s => s.active !== false)
+      .map(s => `<option value="${s.id}">${s.name}</option>`)
+      .join("");
+}
 
 async function loadAppointments() {
   setInfoMsg(apptMsg, "");
@@ -288,7 +298,16 @@ btnLogout.addEventListener("click", () => {
   window.location.href = "/";
 });
 
-btnNew.addEventListener("click", () => openModal());
+btnNew.addEventListener("click", async () => {
+  openModal();
+  try {
+    await loadStaff();
+    await loadClients(); 
+  } catch (err) {
+    setInfoMsg(modalMsg, err.message);
+    aStaff.innerHTML = `<option value="">Error cargando profesionales</option>`;
+  }
+});
 btnClose.addEventListener("click", () => closeModal());
 modal.addEventListener("click", (e) => {
   if (e.target === modal) closeModal();
@@ -325,6 +344,7 @@ apptForm.addEventListener("submit", async (e) => {
 
   const payload = {
     client_id: aClient.value,
+      staff_id: aStaff.value,
     service: aService.value,
     date: aDate.value,
     time: aTime.value,
@@ -332,7 +352,11 @@ apptForm.addEventListener("submit", async (e) => {
     price: Number(aPrice.value),
     notes: aNotes.value.trim() || null
   };
-
+  
+if (!aStaff.value) {
+  setInfoMsg(modalMsg, "Elegí un profesional");
+  return;
+}
   try {
     await api("/api/appointments", { method: "POST", body: payload });
     closeModal();
